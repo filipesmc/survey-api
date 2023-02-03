@@ -1,11 +1,11 @@
-import { HttpRequest, HttpResponse } from "../protocols/http"
+import { IHttpRequest, IHttpResponse } from "../protocols/http"
 import { MissingParamError } from "../errors/missing-param-error"
 import { badRequest } from "../helpers/http-helper"
 import { IController } from "../protocols/controller"
 
 export class SignUpController implements IController{
 
-    handle (httpRequest: HttpRequest): HttpResponse { 
+    handle (httpRequest: IHttpRequest): IHttpResponse { 
 
         const requiredFields = ['name', 'email', 'password', 'passwordConfirmation']
 
