@@ -127,3 +127,24 @@ describe('SignUp Controller', () => {
     })
         
 })
+
+describe('SignUp Controller', () => {
+    test('Should call isValid with proper email', () => {
+        
+        const { sut, emailValidatorStub } = systemUnderTestFactory();
+        const isValidResult = jest.spyOn(emailValidatorStub, 'isValid')
+        
+        const httpRequest = {
+            body: {
+                name: 'Filipe Cruz',
+                email: 'some_filipe@gmail.com',
+                password: 'filipe123',
+                passwordConfirmation: 'filipe123'
+            }
+        }
+        
+        sut.handle(httpRequest)
+        expect(isValidResult).toHaveBeenCalledWith('some_filipe@gmail.com')
+    })
+        
+})
