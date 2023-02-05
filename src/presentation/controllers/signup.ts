@@ -4,9 +4,10 @@ import { badRequest, serverError } from "../helpers/http-helper"
 import { IController } from "../protocols/controller"
 import { IEmailValidator } from "../protocols/email-validator"
 import { InvalidParamError } from "../errors/invalid-param-error"
+import { IPasswordValidator } from "../protocols/password-validator"
 
 export class SignUpController implements IController{
-    constructor(private readonly emailValidator: IEmailValidator){ }
+    constructor(private readonly emailValidator: IEmailValidator, private readonly passValidator: IPasswordValidator){ }
 
     handle (httpRequest: IHttpRequest): IHttpResponse { 
         try{ 
@@ -16,6 +17,8 @@ export class SignUpController implements IController{
                     return badRequest(new MissingParamError(field))
                 }
             }
+            const passwordsMatch = this.passValidator.match(httpRequest.body.password, httpRequest.body.confirmationPassword)
+            if(!passwordsMatch) return badRequest(new InvalidParamError('passwordConfirmation'))
             const isValidEmail = this.emailValidator.isValid(httpRequest.body.email)
             if(!isValidEmail) return badRequest(new InvalidParamError('email'))
 
