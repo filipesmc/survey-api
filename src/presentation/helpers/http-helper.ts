@@ -1,9 +1,15 @@
+import { ServerError } from "../errors/server-error"
 import { IHttpResponse } from "../protocols/http"
 
+enum EResponsesCode{
+    BAD_REQUEST = 400,
+    SERVER_ERROR = 500
+}
+
 export const badRequest = (error: Error): IHttpResponse => {
-   
-    return {
-        statusCode: 400,
-        body: error
-    }
+    return { statusCode: EResponsesCode.BAD_REQUEST, body: error }
+}
+
+export const serverError = (): IHttpResponse => {
+    return { statusCode: EResponsesCode.SERVER_ERROR, body: new ServerError() }
 }
