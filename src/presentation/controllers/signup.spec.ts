@@ -211,3 +211,23 @@ describe('SignUp Controller', () => {
         })
     })      
 })
+
+describe('SignUp Controller', () => {
+    test('Should return 500 if addUserAccount launch a beautiful exception in server', () => {
+        const { systemUnderTest, addUserAccountStub } = systemUnderTestFactory();
+        jest.spyOn(addUserAccountStub, 'add').mockImplementationOnce(() => {
+            throw new Error();
+        })
+        const httpRequest = {
+            body: {
+                name: 'Filipe Cruz',
+                email: 'some_crazy_email@gmail.com',
+                password: 'filipe123',
+                passwordConfirmation: 'filipe123'
+            }
+        }
+        const httpResponse = systemUnderTest.handle(httpRequest)
+        expect(httpResponse.statusCode).toBe(500)
+        expect(httpResponse.body).toEqual(new ServerError())
+    })      
+})
