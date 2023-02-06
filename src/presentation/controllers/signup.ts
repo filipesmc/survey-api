@@ -22,7 +22,8 @@ export class SignUpController implements IController{
             if(!passwordsMatch) return badRequest(new InvalidParamError('passwordConfirmation'))
             const isValidEmail = this.emailValidator.isValid(email)
             if(!isValidEmail) return badRequest(new InvalidParamError('email'))
-            this.addUserAccount.add({ name, email, password })
+            const account = this.addUserAccount.add({ name, email, password })
+            return { statusCode: 200, body:account }
         } catch(error){ 
             return serverError();
         }
