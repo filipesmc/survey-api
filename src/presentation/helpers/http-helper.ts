@@ -3,7 +3,8 @@ import { IHttpResponse } from "../protocols/http"
 
 enum EResponsesCode{
     BAD_REQUEST = 400,
-    SERVER_ERROR = 500
+    SERVER_ERROR = 500,
+    SUCCESS = 200
 }
 
 export const badRequest = (error: Error): IHttpResponse => {
@@ -12,4 +13,8 @@ export const badRequest = (error: Error): IHttpResponse => {
 
 export const serverError = (): IHttpResponse => {
     return { statusCode: EResponsesCode.SERVER_ERROR, body: new ServerError() }
+}
+
+export const success = (data: any): IHttpResponse => {
+    return { statusCode: EResponsesCode.SUCCESS, body: data }
 }
