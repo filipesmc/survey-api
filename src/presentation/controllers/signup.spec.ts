@@ -5,8 +5,8 @@ import { IEmailValidator } from "../protocols/email-validator";
 import { ServerError } from "../errors/server-error";
 import { IPasswordValidator } from "../protocols/password-validator";
 
-interface SutTypes{
-    sut: SignUpController
+interface SystemUnderTestTypes{
+    systemUnderTest: SignUpController
     emailValidatorStub: IEmailValidator
     passwordValidatorStub: IPasswordValidator
 } 
@@ -25,16 +25,16 @@ const emailValidatorFactory = (): IEmailValidator =>{
     return new EmailValidatorStub();
 }
 
-const systemUnderTestFactory = (): SutTypes => {    
+const systemUnderTestFactory = (): SystemUnderTestTypes => {    
     const passwordValidatorStub = passwordValidatorFactory();
     const emailValidatorStub = emailValidatorFactory();
-    const sut = new SignUpController(emailValidatorStub, passwordValidatorStub);
-    return { sut, emailValidatorStub, passwordValidatorStub }
+    const systemUnderTest = new SignUpController(emailValidatorStub, passwordValidatorStub);
+    return { systemUnderTest, emailValidatorStub, passwordValidatorStub }
 }
 
 describe('SignUp Controller', () => {
     test('Should return 400 if no name is provided', () => {
-        const { sut } = systemUnderTestFactory();
+        const { systemUnderTest } = systemUnderTestFactory();
         const httpRequest = {
             body: {
                 email: 'filipe@gmail.com',
@@ -42,7 +42,7 @@ describe('SignUp Controller', () => {
                 passwordConfirmation: 'filipe123'
             }
         }
-        const httpResponse = sut.handle(httpRequest)
+        const httpResponse = systemUnderTest.handle(httpRequest)
         expect(httpResponse.statusCode).toBe(400)
         expect(httpResponse.body).toEqual(new MissingParamError('name'))
     })      
@@ -50,7 +50,7 @@ describe('SignUp Controller', () => {
 
 describe('SignUp Controller', () => {
     test('Should return 400 if no email is provided', () => { 
-        const { sut } = systemUnderTestFactory();
+        const { systemUnderTest } = systemUnderTestFactory();
         const httpRequest = {
             body: {
                 name: 'Filipe Cruz',
@@ -58,7 +58,7 @@ describe('SignUp Controller', () => {
                 passwordConfirmation: 'filipe123'
             }
         }
-        const httpResponse = sut.handle(httpRequest)
+        const httpResponse = systemUnderTest.handle(httpRequest)
         expect(httpResponse.statusCode).toBe(400)
         expect(httpResponse.body).toEqual(new MissingParamError('email'))
     })      
@@ -66,7 +66,7 @@ describe('SignUp Controller', () => {
 
 describe('SignUp Controller', () => {
     test('Should return 400 if no password is provided', () => {
-        const { sut } = systemUnderTestFactory();
+        const { systemUnderTest } = systemUnderTestFactory();
         const httpRequest = {
             body: {
                 name: 'Filipe Cruz',
@@ -74,7 +74,7 @@ describe('SignUp Controller', () => {
                 passwordConfirmation: 'filipe123'
             }
         }
-        const httpResponse = sut.handle(httpRequest)
+        const httpResponse = systemUnderTest.handle(httpRequest)
         expect(httpResponse.statusCode).toBe(400)
         expect(httpResponse.body).toEqual(new MissingParamError('password'))
     })   
@@ -82,7 +82,7 @@ describe('SignUp Controller', () => {
 
 describe('SignUp Controller', () => {
     test('Should return 400 if no password confirmation is provided', () => { 
-        const { sut } = systemUnderTestFactory();      
+        const { systemUnderTest } = systemUnderTestFactory();      
         const httpRequest = {
             body: {
                 name: 'Filipe Cruz',
@@ -90,7 +90,7 @@ describe('SignUp Controller', () => {
                 password: 'filipe123'
             }
         }       
-        const httpResponse = sut.handle(httpRequest)
+        const httpResponse = systemUnderTest.handle(httpRequest)
         expect(httpResponse.statusCode).toBe(400)
         expect(httpResponse.body).toEqual(new MissingParamError('passwordConfirmation'))
     })       
@@ -98,7 +98,7 @@ describe('SignUp Controller', () => {
 
 describe('SignUp Controller', () => {
     test('Should return 400 if an invalid email is provided', () => {
-        const { sut, emailValidatorStub } = systemUnderTestFactory();
+        const { systemUnderTest, emailValidatorStub } = systemUnderTestFactory();
         jest.spyOn(emailValidatorStub, 'isValid').mockReturnValueOnce(false)
         const httpRequest = {
             body: {
@@ -108,7 +108,7 @@ describe('SignUp Controller', () => {
                 passwordConfirmation: 'filipe123'
             }
         } 
-        const httpResponse = sut.handle(httpRequest)
+        const httpResponse = systemUnderTest.handle(httpRequest)
         expect(httpResponse.statusCode).toBe(400)
         expect(httpResponse.body).toEqual(new InvalidParamError('email'))
     })     
@@ -116,7 +116,7 @@ describe('SignUp Controller', () => {
 
 describe('SignUp Controller', () => {
     test('Should call isValid with proper email', () => {
-        const { sut, emailValidatorStub } = systemUnderTestFactory();
+        const { systemUnderTest, emailValidatorStub } = systemUnderTestFactory();
         const isValidResult = jest.spyOn(emailValidatorStub, 'isValid')
         const httpRequest = {
             body: {
@@ -126,14 +126,14 @@ describe('SignUp Controller', () => {
                 passwordConfirmation: 'filipe123'
             }
         }
-        sut.handle(httpRequest)
+        systemUnderTest.handle(httpRequest)
         expect(isValidResult).toHaveBeenCalledWith('some_filipe@gmail.com')
     })  
 })
 
 describe('SignUp Controller', () => {
     test('Should return 500 if email validator explode a big exception in server', () => {
-        const { sut, emailValidatorStub } = systemUnderTestFactory();
+        const { systemUnderTest, emailValidatorStub } = systemUnderTestFactory();
         jest.spyOn(emailValidatorStub, 'isValid').mockImplementationOnce(() => {
             throw new Error();
         })
@@ -145,7 +145,7 @@ describe('SignUp Controller', () => {
                 passwordConfirmation: 'filipe123'
             }
         }
-        const httpResponse = sut.handle(httpRequest)
+        const httpResponse = systemUnderTest.handle(httpRequest)
         expect(httpResponse.statusCode).toBe(500)
         expect(httpResponse.body).toEqual(new ServerError())
     })      
@@ -153,7 +153,7 @@ describe('SignUp Controller', () => {
 
 describe('SignUp Controller', () => {
     test('Should return 400 if provided passwords dont match', () => {
-        const { sut, passwordValidatorStub } = systemUnderTestFactory();
+        const { systemUnderTest, passwordValidatorStub } = systemUnderTestFactory();
         jest.spyOn(passwordValidatorStub, 'match').mockImplementationOnce(() => {
             return false;
         })
@@ -165,7 +165,7 @@ describe('SignUp Controller', () => {
                 passwordConfirmation: 'filipe123'
             }
         } 
-        const httpResponse = sut.handle(httpRequest)
+        const httpResponse = systemUnderTest.handle(httpRequest)
         expect(httpResponse.statusCode).toBe(400)
         expect(httpResponse.body).toEqual(new InvalidParamError('passwordConfirmation'))
     })     
