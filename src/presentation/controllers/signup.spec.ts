@@ -20,7 +20,7 @@ const addUserAccountFactory = (): IAddAccount => {
         add(account: AddAccountModel): AccountModel { 
             const fakeUserAccount = {
                 id: 'id',
-                name: 'Filipe',
+                name: 'Filipe Cruz',
                 email: 'filipe@gmail.com',
                 password: 'filipe123'
             }
@@ -230,4 +230,26 @@ describe('SignUp Controller', () => {
         expect(httpResponse.statusCode).toBe(500)
         expect(httpResponse.body).toEqual(new ServerError())
     })      
+})
+
+describe('SignUp Controller', () => {
+    test('Should return 200 if an invalid email is provided', () => {
+        const { systemUnderTest } = systemUnderTestFactory();
+        const httpRequest = {
+            body: {
+                name: 'Filipe Cruz',
+                email: 'filipe@gmail.com',
+                password: 'filipe123',
+                passwordConfirmation: 'filipe123'
+            }
+        } 
+        const httpResponse = systemUnderTest.handle(httpRequest)
+        expect(httpResponse.statusCode).toBe(200)
+        expect(httpResponse.body).toEqual({
+            id: 'id',
+            name: 'Filipe Cruz',
+            email: 'filipe@gmail.com',
+            password: 'filipe123'
+        })
+    })     
 })
