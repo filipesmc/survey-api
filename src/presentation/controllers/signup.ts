@@ -9,7 +9,7 @@ import { IAddAccount } from "../../domain/usecase/add-account"
 
 export class SignUpController implements IController{
     constructor(private readonly emailValidator: IEmailValidator, private readonly passValidator: IPasswordValidator,
-        private readonly addUserAccountStub: IAddAccount){ }
+        private readonly addUserAccount: IAddAccount){ }
 
     handle (httpRequest: IHttpRequest): IHttpResponse { 
         try{ 
