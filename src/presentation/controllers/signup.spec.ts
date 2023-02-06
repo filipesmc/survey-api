@@ -152,10 +152,10 @@ describe('SignUp Controller', () => {
 })
 
 describe('SignUp Controller', () => {
-    test('Should return 400 if provided passwords dont match', () => {
+    test('Should return 500 if provided passwords dont match and launch an exception', () => {
         const { systemUnderTest, passwordValidatorStub } = systemUnderTestFactory();
         jest.spyOn(passwordValidatorStub, 'match').mockImplementationOnce(() => {
-            return false;
+            throw new Error();
         })
         const httpRequest = {
             body: {
@@ -166,7 +166,7 @@ describe('SignUp Controller', () => {
             }
         } 
         const httpResponse = systemUnderTest.handle(httpRequest)
-        expect(httpResponse.statusCode).toBe(400)
-        expect(httpResponse.body).toEqual(new InvalidParamError('passwordConfirmation'))
+        expect(httpResponse.statusCode).toBe(500)
+        expect(httpResponse.body).toEqual(new ServerError())
     })     
 })
