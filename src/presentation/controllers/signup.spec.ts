@@ -4,12 +4,31 @@ import { InvalidParamError } from "../errors/invalid-param-error";
 import { IEmailValidator } from "../protocols/email-validator";
 import { ServerError } from "../errors/server-error";
 import { IPasswordValidator } from "../protocols/password-validator";
+import { AddAccountModel } from "../../domain/usecase/add-account";
+import { IAddAccount } from "../../domain/usecase/add-account";
+import { AccountModel } from "../../domain/models/account";
 
 interface SystemUnderTestTypes{
     systemUnderTest: SignUpController
     emailValidatorStub: IEmailValidator
     passwordValidatorStub: IPasswordValidator
+    addUserAccountStub: IAddAccount
 } 
+
+const addUserAccountFactory = (): IAddAccount => {
+    class AddUserAccountStub implements IAddAccount{
+        add(account: AddAccountModel): AccountModel { 
+            const fakeUserAccount = {
+                id: 'id',
+                name: 'Filipe',
+                email: 'filipe@gmail.com',
+                password: 'filipe123'
+            }
+            return fakeUserAccount
+        }
+    }
+    return new AddUserAccountStub();
+}
 
 const passwordValidatorFactory = (): IPasswordValidator =>{
     class PasswordValidatorStub implements IPasswordValidator{
@@ -25,11 +44,12 @@ const emailValidatorFactory = (): IEmailValidator =>{
     return new EmailValidatorStub();
 }
 
-const systemUnderTestFactory = (): SystemUnderTestTypes => {    
+const systemUnderTestFactory = (): SystemUnderTestTypes => {   
+    const addUserAccountStub = addUserAccountFactory(); 
     const passwordValidatorStub = passwordValidatorFactory();
     const emailValidatorStub = emailValidatorFactory();
-    const systemUnderTest = new SignUpController(emailValidatorStub, passwordValidatorStub);
-    return { systemUnderTest, emailValidatorStub, passwordValidatorStub }
+    const systemUnderTest = new SignUpController(emailValidatorStub, passwordValidatorStub, addUserAccountStub);
+    return { systemUnderTest, emailValidatorStub, passwordValidatorStub, addUserAccountStub }
 }
 
 describe('SignUp Controller', () => {
@@ -169,4 +189,25 @@ describe('SignUp Controller', () => {
         expect(httpResponse.statusCode).toBe(500)
         expect(httpResponse.body).toEqual(new ServerError())
     })     
+})
+
+describe('SignUp Controller', () => {
+    test('Should call addUserAccount with correct values', () => {
+        const { systemUnderTest, addUserAccountStub } = systemUnderTestFactory();
+        const addUserSpy = jest.spyOn(addUserAccountStub, 'add')
+        const httpRequest = {
+            body: {
+                name: 'Filipe Cruz',
+                email: 'filipe@gmail.com',
+                password: 'filipe123',
+                passwordConfirmation: 'filipe123'
+            }
+        }
+        systemUnderTest.handle(httpRequest)
+        expect(addUserSpy).toHaveBeenCalledWith({
+            name: 'Filipe Cruz',
+            email: 'filipe@gmail.com',
+            password: 'filipe123'
+        })
+    })      
 })
