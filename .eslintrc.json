@@ -1,4 +1,8 @@
-{
+{   
+    "env":{
+        "jest": true,
+        "node": true
+    },
     "extends": "standard-with-typescript",
     "parserOptions": {
         "project": "./tsconfig.json"
