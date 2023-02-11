@@ -152,7 +152,7 @@ describe('SignUp Controller', () => {
 })
 
 describe('SignUp Controller', () => {
-    test('Should return 500 if email validator explode a big exception in server', async () => {
+    test('Should return 500 if email validator launch exception in server', async () => {
         const { systemUnderTest, emailValidatorStub } = systemUnderTestFactory();
         jest.spyOn(emailValidatorStub, 'isValid').mockImplementationOnce(() => {
             throw new Error();
@@ -213,7 +213,7 @@ describe('SignUp Controller', () => {
 })
 
 describe('SignUp Controller', () => {
-    test('Should return 500 if addUserAccount launch a beautiful exception in server', async () => {
+    test('Should return 500 if addUserAccount launch a exception in server', async () => {
         const { systemUnderTest, addUserAccountStub } = systemUnderTestFactory();
         jest.spyOn(addUserAccountStub, 'add').mockImplementationOnce(async () => {
             return new Promise((resolve, reject) => reject(new Error()));
