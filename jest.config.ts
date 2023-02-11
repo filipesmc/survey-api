@@ -8,7 +8,6 @@ const config: Config = {
   roots: [
     "<rootDir>/src"
   ],
-  testMatch: ["*.spec.ts", "*.test.ts"],
   testEnvironment: "jest-environment-node",
   transform: {
     '.+\\.ts$': 'ts-jest'
